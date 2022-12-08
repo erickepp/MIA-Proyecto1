@@ -1,4 +1,5 @@
 #include "../lib/scanner.h"
+#include "../lib/disco.h"
 #include <iostream>
 #include <stdlib.h>
 #include <locale>
@@ -9,6 +10,7 @@
 #include <cstdlib>
 using namespace std;
 
+Disk disco;
 void print_function(string, vector<string>);
 
 scanner::scanner() { 
@@ -32,7 +34,7 @@ void scanner::start() {
     
 void scanner::functions(string token, vector<string> tks) {
     if (compare(token, "MKDISK")) {
-        print_function("MKDISK", tks);
+        disco.mkdisk(tks);
     } else if (compare(token, "RMDISK")) {
         print_function("RMDISK", tks);
     } else if (compare(token, "FDISK")) {
