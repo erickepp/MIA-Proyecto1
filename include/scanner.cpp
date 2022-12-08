@@ -20,7 +20,7 @@ void scanner::start() {
     system("clear");
     while (true) {
         string texto;
-        cout << "\033[1;32m>>> \033[0m";
+        cout << "\033[1;37m>> \033[0m";
         getline(cin, texto);
         if (compare(texto, "exit")) {
             break;
@@ -36,7 +36,7 @@ void scanner::functions(string token, vector<string> tks) {
     if (compare(token, "MKDISK")) {
         disco.mkdisk(tks);
     } else if (compare(token, "RMDISK")) {
-        print_function("RMDISK", tks);
+        disco.rmdisk(tks);
     } else if (compare(token, "FDISK")) {
         print_function("FDISK", tks);
     } else if (compare(token, "MOUNT")) {
@@ -184,11 +184,11 @@ bool scanner::compare(string a, string b){
 }
 
 void scanner::errores(string operacion, string mensaje) {
-    cout << "\033[1;41mError\033[0;31m(" + operacion + ")~~> \033[0m" << mensaje << endl;
+    cout << "\033[1;41mError\033[0;31m(" + operacion + ")~~> \033[0m" << mensaje << endl << endl;
 }
 
 void scanner::respuesta(string operacion, string mensaje) {
-    cout << "\033[1;42m(" + operacion + ")\033[0;32m~~> \033[0m" << mensaje << endl;
+    cout << "\033[1;42m(" + operacion + ")\033[0;32m~~> \033[0m" << mensaje << endl << endl;
 }
 
 void print_function(string token, vector<string> tks) {
@@ -197,4 +197,5 @@ void print_function(string token, vector<string> tks) {
         for (int i = 0; i < tks.size(); i++) {
             cout << tks[i] << endl;
     }
+    cout << endl;
 }

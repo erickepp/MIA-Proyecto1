@@ -24,6 +24,7 @@ class Disk {
 
         void mkdisk(vector<string> tokens);
         void makeDisk(string s, string f, string u, string p);
+        void rmdisk(vector<string> tokens);
     private:
         Shared shared;   
 };

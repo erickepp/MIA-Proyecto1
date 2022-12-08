@@ -38,17 +38,18 @@ bool Shared::compare(string s1, string s2) {
 }
 
 void Shared::handler(string title, string message) {
-    cout << "\033[1;31m Error: \033"
+    cout << "\033[1;31mError: \033"
         << "\033[0;31m(" + title + ")~> \033[0m"
-        << message << endl;
+        << message << endl << endl;
 }
 
 bool Shared::confirmation(string title, string message) {
-    cout << "\033[1;36m Confirmación: \033"
+    cout << "\033[1;36mConfirmación: \033"
         << "\033[0;36m(" + title + ")~> \033[0m"
         << "¿" + message + "? Y/N : ";
     string action;
     getline(cin, action);
+    cout << endl;
     if (compare(action, "y") || compare(action, "yes")) {
         return true;
     }
@@ -56,6 +57,6 @@ bool Shared::confirmation(string title, string message) {
 }
 
 void Shared::response(string title, string message) {
-    cout << "\033[0;32m (" + title + "): \033[0m"
-        << message << endl;
+    cout << "\033[0;32m(" + title + "): \033[0m"
+        << message << endl << endl;
 }

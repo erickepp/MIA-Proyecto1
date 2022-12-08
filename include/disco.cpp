@@ -27,25 +27,29 @@ void Disk::mkdisk(vector<string> tokens) {
             if(f.empty()) {
                 f = token;
             } else {
-                scan.errores("MKDISK", "El parametro F ya fue ingresado en el comando" + tk);
+                scan.errores("MKDISK", "El parametro F ya fue ingresado");
+                error = true;
             }
         } else if(scan.compare(tk, "s")) {
             if (size.empty()) {
                 size = token;
             } else{
-                scan.errores("MKDISK", "parametro SIZE repetido en el comando" + tk);
+                scan.errores("MKDISK", "parametro SIZE repetido");
+                error = true;
             }
         } else if (scan.compare(tk, "u")) {
             if (u.empty()) {
                 u = token;
             } else{
-                scan.errores("MKDISK", "parametro U repetido en el comando" + tk);
+                scan.errores("MKDISK", "parametro U repetido");
+                error = true;
             }
         } else if (scan.compare(tk, "path")) {
             if (path.empty()) {
                 path = token;
             } else{
-                scan.errores("MKDISK", "parametro PATH repetido en el comando" + tk);
+                scan.errores("MKDISK", "parametro PATH repetido");
+                error = true;
             }    
         } else {
             scan.errores("MKDISK", "no se esperaba el parametro " + tk);
@@ -169,5 +173,70 @@ void Disk::makeDisk(string s, string f, string u, string path) {
         }
     }catch(invalid_argument &e){
         scan.errores("MKDISK", "Size debe ser un entero");
+    }
+}
+
+void Disk::rmdisk(vector<string> tokens) {
+    string path = "";
+    bool error = false;
+    for(string token: tokens){
+        string tk = token.substr(0, token.find("="));
+        token.erase(0, tk.length()+1);
+        if (scan.compare(tk, "path")) {
+            if (path.empty()) {
+                path = token;
+            } else{
+                scan.errores("MKDISK", "parametro PATH repetido");
+                error = true;
+            }    
+        } else {
+            scan.errores("MKDISK", "no se esperaba el parametro " + tk);
+            error = true;
+            break;
+        }
+    }
+    if (error) {
+        return;
+    } else if(path.empty()) {
+        scan.errores("MKDISK", "se requiere parametro Path para este comando");
+        return;
+    }
+
+    string path2 = path;
+    if (path.substr(0, 1) == "\"") {
+        path2 = path.substr(1, path.length()-2);
+    }
+
+    if (!scan.compare(path2.substr(path2.find_last_of(".") + 1), "dsk")) {
+        scan.errores("RMDISK", "El disco debe ser de tipo .dsk");
+        return;
+    }
+
+    FILE *file = fopen(path2.c_str(), "r");
+    if (file == NULL) {
+        scan.errores("MKDISK", "El disco no existe");
+        return;
+    } else {
+        Structs::MBR disco;
+        fseek(file, 0, SEEK_SET);
+        fread(&disco, sizeof(Structs::MBR), 1, file);
+        fclose(file);
+
+        struct tm *tm;
+        tm = localtime(&disco.mbr_fecha_creacion);
+        char mostrar_fecha [20];
+        strftime(mostrar_fecha, 20, "%Y/%m/%d %H:%M:%S", tm);                
+        scan.respuesta("RMDISK", "Se eliminará el siguiente disco");
+        cout << "Size:  " << disco.mbr_tamano << endl;
+        cout << "Fecha:  " << mostrar_fecha << endl;
+        cout << "Fit:  " << disco.disk_fit << endl;
+        cout << "Disk_Signature:  " << disco.mbr_disk_signature << endl;
+        cout << "Bytes del MBR:  " << sizeof(Structs::MBR) << endl;
+        cout << "Path:  " << path2 << endl << endl;
+
+        if (shared.confirmation("RMDISK", "Desea continuar")) {
+            remove(path2.c_str());
+            scan.respuesta("RMDISK", "Disco eliminado exitosamente");
+        }
     }
 }
