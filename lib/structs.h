@@ -29,6 +29,15 @@ public:
         Partition mbr_Partition_3; // 27 bytes
         Partition mbr_Partition_4;// n logicas // 27 bytes
     } MBR; // Pesa 128 bytes
+
+    typedef struct _EBR {
+        char part_status = '0';
+        char part_fit;
+        int part_start;
+        int part_size = 0;
+        int part_next = -1;
+        char part_name[16];
+    } EBR;
 };
 
 #endif

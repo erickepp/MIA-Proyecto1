@@ -38,7 +38,7 @@ void scanner::functions(string token, vector<string> tks) {
     } else if (compare(token, "RMDISK")) {
         disco.rmdisk(tks);
     } else if (compare(token, "FDISK")) {
-        print_function("FDISK", tks);
+        disco.fdisk(tks);
     } else if (compare(token, "MOUNT")) {
         print_function("MOUNT", tks);
     } else if (compare(token, "UNMOUNT")) {
