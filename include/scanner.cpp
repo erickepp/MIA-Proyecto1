@@ -44,7 +44,7 @@ void scanner::functions(string token, vector<string> tks) {
     } else if (compare(token, "MOUNT")) {
         mount.mount(tks);
     } else if (compare(token, "UNMOUNT")) {
-        print_function("UNMOUNT", tks);
+        mount.unmount(tks);
     } else if (compare(token, "MKFS")) {
         print_function("MKFS", tks);
     } else if (compare(token, "LOGIN")) {

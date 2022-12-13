@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "string"
 #include <locale>
+#include <regex>
 
 using namespace std;
 
@@ -108,8 +109,68 @@ void Mount::mount(string p, string n) {
 
 }
 
+void Mount::unmount(vector<string> command) {
+    string id = "";
+    bool error = false;
+    for(string current: command){
+        string tk = current.substr(0, current.find("="));
+        current.erase(0, tk.length()+1);
+        if (shared.compare(tk, "id")) {
+            if (id.empty()) {
+                id = current;
+            } else{
+                shared.handler("UNMOUNT", "parametro id repetido");
+                error = true;
+                break;
+            }    
+        } else {
+            shared.handler("UNMOUNT", "no se esperaba el parametro " + tk);
+            error = true;
+            break;
+        }
+    }
+    if (error) {
+        return;
+    } else if(id.empty()) {
+        shared.handler("UNMOUNT", "se requiere parametro id para este comando");
+        return;
+    }
+
+    unmount(id);
+}
+
+void Mount::unmount(string id) {
+    string tk = id;
+    char letter;
+    int number;
+
+    if (regex_match(id, regex("27[1-9][0-9]*[a-z]"))) {
+        id.erase(0, 2);
+        number = stoi(id.substr(0, id.length()-1));
+        id.erase(0, id.length()-1);
+        letter = id[0];
+    } else {
+        shared.handler("UNMOUNT", "id no válido");
+        return;
+    }
+
+    for (int i = 0; i < 99; i++) {
+        if (i == number-1 && mounted[i].status == '1') {
+            for (int j = 0; j < 26; j++) {
+                if (letter == mounted[i].mpartitions[j].letter && mounted[i].mpartitions[j].status == '1') {
+                    mounted[i].mpartitions[j].status = '0';
+                    shared.response("UNMOUNT", "se ha realizado correctamente el unmount -id=" + tk);
+                    return;
+                }
+            }
+        }
+    }
+
+    shared.handler("UNMOUNT", "-id=" + tk + " no existe");
+}
+
 void Mount::listmount() {
-    cout << "<-------------------------- MOUNTS -------------------------->"<< endl;
+    cout << "<-------------------------- MOUNTS -------------------------->" << endl;
     for (int i = 0; i < 99; i++) {
         for (int j = 0; j < 26; j++) {
             if (mounted[i].mpartitions[j].status == '1') {
