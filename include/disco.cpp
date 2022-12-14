@@ -434,7 +434,7 @@ void Disk::generatepartition(string s, string u, string p, string t, string f, s
             shared.handler("FDISK", "U debe ser b, k o m");
             return;
         }
-        if (p.substr(0,1) == "\"") {
+        if (p.substr(0, 1) == "\"") {
             p = p.substr(1,p.length()-2);
         }
         if (!(shared.compare(t, "p") || shared.compare(t, "e") || shared.compare(t, "l"))) {

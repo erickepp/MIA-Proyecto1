@@ -22,7 +22,7 @@ void Mount::mount(vector<string> command){
         string id = shared.lower(current.substr(0, current.find("=")));
         current.erase(0, id.length() + 1);
         if (current.substr(0, 1) == "\"") {
-            current.substr(1, current.length()-2);
+            current = current.substr(1, current.length()-2);
         }
 
         if (shared.compare(id, "name")) {

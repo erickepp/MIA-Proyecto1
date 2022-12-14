@@ -16,6 +16,9 @@ class scanner {
         string upper(string a);
         void errores(string operacion, string mensaje);
         void respuesta(string operacion, string mensaje);
+        bool confirmar(string mensaje);
+        void funcion_exec(vector<string> tokens);
+        void exec(string path);
 };
 
 #endif

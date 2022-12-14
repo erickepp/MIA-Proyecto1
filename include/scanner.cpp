@@ -85,14 +85,12 @@ void scanner::functions(string token, vector<string> tks) {
         print_function("CHOWN", tks);
     } else if (compare(token, "CHGRP")) {
         print_function("CHGRP", tks);
-    } else if (compare(token, "PAUSE")) {
-        print_function("PAUSE", tks);
     } else if (compare(token, "RECOVERY")) {
         print_function("RECOVERY", tks);
     } else if (compare(token, "LOSS")) {
         print_function("LOSS", tks);
     } else if (compare(token, "EXEC")) {
-        print_function("EXEC", tks);
+        funcion_exec(tks);
     } else if (compare(token, "REP")) {
         print_function("REP", tks);
     } else if(compare(token.substr(0,1), "#")){
@@ -191,6 +189,74 @@ void scanner::errores(string operacion, string mensaje) {
 
 void scanner::respuesta(string operacion, string mensaje) {
     cout << "\033[1;42m(" + operacion + ")\033[0;32m~~> \033[0m" << mensaje << endl << endl;
+}
+
+bool scanner::confirmar(string mensaje){
+    cout << mensaje << "Confirmar(S), cualquier otra letra para cancelar" << endl;
+    string respuesta;
+    getline(cin,respuesta);
+    cout << endl;
+    if (compare(respuesta, "s")) {
+        return true;
+    }
+    return false;
+}
+
+void scanner::funcion_exec(vector<string> tokens) {
+    string path = "";
+    for (string token: tokens) {
+        string tk = token.substr(0, token.find("="));
+        token.erase(0, tk.length()+1);
+        if (token.substr(0, 1) == "\"") {
+            path = token.substr(1, token.length()-2);
+        }
+        if (compare(tk, "path")) {
+            path = token;
+        }
+    }
+    if (path.empty()) {
+        errores("EXEC", "Se requiere path para este comando");
+        return;
+    }
+    exec(path);
+}
+
+void scanner::exec(string path) {
+    if (!compare(path.substr(path.find_last_of(".") + 1), "mia")) {
+        errores("EXEC", "El archivo debe ser de tipo .mia");
+        return;
+    }
+    string filename(path);
+    vector <string> lines;
+    string line;
+    ifstream input_file(filename);
+    if (!input_file.is_open()) {
+        errores("EXEC", "No se puede abrir el archivo " + filename);
+        return;
+    }
+    while (getline(input_file, line)) {
+        lines.push_back(line);
+    }
+    cout << endl;
+    for (const auto &i: lines) {
+        string texto = i;
+        string tk = token(texto);
+        if (texto != "") {
+            cout << "\033[1;37m>> \033[0m" << texto << endl;
+            if(compare(texto, "PAUSE")) {
+                string pause;
+                cout << "\033[1;42m(PAUSE)\033[0;32m~~> \033[0mPresione enter para continuar...";
+                getline(cin,pause);
+                cout << endl;
+                continue;
+            }
+            texto.erase(0, tk.length()+1);
+            vector <string> tks = split_tokens(texto);
+            functions(tk, tks);
+        }
+    }
+    input_file.close();
+    return;
 }
 
 void print_function(string token, vector<string> tks) {
