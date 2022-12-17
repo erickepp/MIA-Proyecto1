@@ -9,11 +9,7 @@ using namespace std;
 
 Mount::Mount() {}
 
-void Mount::mount(vector<string> command){
-    if (command.empty()) {
-        listmount();
-        return;
-    }
+void Mount::mount(vector<string> command) {
     vector<string> required = { "path", "name" };
     string path;
     string name;
@@ -73,12 +69,22 @@ void Mount::mount(string p, string n) {
         for (int i = 0; i < 99; i++) {
             if (mounted[i].path == p) {
                 for (int j = 0; j < 26; j++) {
+                    MountedPartition partition = mounted[i].mpartitions[j];
+                    if (partition.status == '1' && partition.name == n) {
+                        shared.handler("MOUNT", "la partición " + string(partition.name) + " ya está montada");
+                        return;
+                    }
+                }
+
+                for (int j = 0; j < 26; j++) {
                     if (Mount::mounted[i].mpartitions[j].status == '0') {
+                        mounted[i].status = '1';
                         mounted[i].mpartitions[j].status = '1';
                         mounted[i].mpartitions[j].letter = alfabeto.at(j);
                         strcpy(mounted[i].mpartitions[j].name, n.c_str());
                         string re = to_string(i + 1) + alfabeto.at(j);
                         shared.response("MOUNT", "se ha realizado correctamente el mount -id=27" + re);
+                        listmount();
                         return;
                     }
                 }
@@ -96,6 +102,7 @@ void Mount::mount(string p, string n) {
                         strcpy(mounted[i].mpartitions[j].name, n.c_str());
                         string re = to_string(i + 1) + alfabeto.at(j);
                         shared.response("MOUNT", "se ha realizado correctamente el mount -id=27" + re);
+                        listmount();
                         return;
                     }
                 }
@@ -106,7 +113,6 @@ void Mount::mount(string p, string n) {
         shared.handler("MOUNT", e.what());
         return;
     }
-
 }
 
 void Mount::unmount(vector<string> command) {
@@ -160,6 +166,19 @@ void Mount::unmount(string id) {
                 if (letter == mounted[i].mpartitions[j].letter && mounted[i].mpartitions[j].status == '1') {
                     mounted[i].mpartitions[j].status = '0';
                     shared.response("UNMOUNT", "se ha realizado correctamente el unmount -id=" + tk);
+                    
+                    char status = '0';
+                    for (int k = 0; k < 26; k++) {
+                        if (mounted[i].mpartitions[k].status == '1') {
+                            status = '1';
+                            break;
+                        }
+                    }
+
+                    if (status == '0') {
+                        mounted[i].status = '0';
+                    }
+                    
                     return;
                 }
             }

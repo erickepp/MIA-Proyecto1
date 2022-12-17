@@ -63,7 +63,7 @@ void Disk::mkdisk(vector<string> tokens) {
     }
 
     if (f.empty()) {
-        f = "BF";
+        f = "FF";
     }
     if (u.empty()) {
         u = "M";

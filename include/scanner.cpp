@@ -1,6 +1,7 @@
 #include "../lib/scanner.h"
 #include "../lib/disco.h"
 #include "../lib/mount.h"
+#include "../lib/rep.h"
 #include <iostream>
 #include <stdlib.h>
 #include <locale>
@@ -13,6 +14,7 @@ using namespace std;
 
 Disk disco;
 Mount mount;
+Rep rep;
 void print_function(string, vector<string>);
 
 scanner::scanner() { 
@@ -92,7 +94,7 @@ void scanner::functions(string token, vector<string> tks) {
     } else if (compare(token, "EXEC")) {
         funcion_exec(tks);
     } else if (compare(token, "REP")) {
-        print_function("REP", tks);
+        rep.rep(tks, mount.mounted);
     } else if(compare(token.substr(0,1), "#")){
         respuesta("COMENTARIO", token);
     } else{
